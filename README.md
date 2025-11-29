@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -544,15 +544,11 @@
       </div>
     </div>
     
-      <div class="hero-image-inner">
-        <h2>Vintage Leather Collection</h2>
-        <p>Deckle handmade paper · Key locks · Stone embossed designs.</p>
-        <div class="hero-stack">
-       
-          
-        </div>
-      </div>
-   
+    <div class="hero-image-inner">
+      <h2>Vintage Leather Collection</h2>
+      <p>Deckle handmade paper · Key locks · Stone embossed designs.</p>
+      <div class="hero-stack"></div>
+    </div>
   </section>
 
   <!-- Products -->
@@ -567,7 +563,6 @@
       <!-- 1 -->
       <div class="product-card">
         <div class="product-image-wrapper">
-          <!-- Replace src with your real image -->
           <img src="https://via.placeholder.com/600x450?text=Leaf+Embossed+Journal" alt="Leaf Embossed Leather Cover Journal With Plain Paper">
         </div>
         <div class="product-body">
@@ -585,7 +580,6 @@
                     data-price="899">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -610,7 +604,6 @@
                     data-price="799">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -635,7 +628,6 @@
                     data-price="749">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -660,7 +652,6 @@
                     data-price="849">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -685,7 +676,6 @@
                     data-price="1399">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -710,7 +700,6 @@
                     data-price="1299">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -735,7 +724,6 @@
                     data-price="1349">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -760,7 +748,6 @@
                     data-price="999">
               Add to Cart
             </button>
-           
           </div>
         </div>
       </div>
@@ -785,7 +772,6 @@
                     data-price="899">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -810,7 +796,6 @@
                     data-price="1449">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -835,7 +820,6 @@
                     data-price="1249">
               Add to Cart
             </button>
-            
           </div>
         </div>
       </div>
@@ -911,10 +895,10 @@
           <span id="cartTotal">₹0</span>
         </div>
         <small>
-          Click below to send your cart details to us on WhatsApp and complete the order.
+          Click below to pay securely via UPI (PhonePe / GPay / Paytm / BHIM).
         </small>
-        <button class="btn btn-primary" style="width: 100%;" onclick="checkoutWhatsApp()">
-          Checkout via WhatsApp
+        <button class="btn btn-primary" style="width: 100%;" onclick="checkoutUPI()">
+          Pay Now with UPI
         </button>
       </div>
     </div>
@@ -997,7 +981,7 @@
       });
     });
 
-    // Enquiry form -> WhatsApp redirect
+    // Enquiry form -> WhatsApp redirect (still WhatsApp, only for enquiry)
     function handleEnquiry(e) {
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
@@ -1018,25 +1002,48 @@
       e.target.reset();
     }
 
-    // Checkout via WhatsApp with cart details
-    function checkoutWhatsApp() {
+    /***********************
+     *  UPI PAYMENT CONFIG *
+     ***********************/
+    const PAYMENT_CONFIG = {
+      upiId: "9431505374-2@axl",          // 🔴 your UPI ID
+      name: "Leather Journal Studio"      // name shown in UPI apps
+    };
+
+    function isMobile() {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
+    function buildUpiUrl(amount, customerName) {
+      const params = new URLSearchParams({
+        pa: PAYMENT_CONFIG.upiId,
+        pn: PAYMENT_CONFIG.name,
+        am: amount.toString(),
+        cu: "INR",
+        tn: `Leather journals order - ${customerName || "Customer"}`
+      });
+      return "upi://pay?" + params.toString();
+    }
+
+    function checkoutUPI() {
       if (cart.length === 0) {
         alert('Your cart is empty. Please add at least one journal first.');
         return;
       }
 
       const total = cart.reduce((sum, item) => sum + item.price, 0);
-      const itemsText = cart
-        .map((item, i) => `${i + 1}. ${item.name} - ₹${item.price}`)
-        .join('%0A');
 
-      const text =
-        `Hello, I would like to place an order for these journals:` +
-        `%0A${itemsText}` +
-        `%0A%0ATotal: ₹${total}`;
+      // Ask for name (optional, for UPI note)
+      const customerName = prompt("Enter your name for the payment (optional):", "") || "Customer";
 
-      const waUrl = `https://wa.me/919431505374?text=${text}`;
-      window.open(waUrl, '_blank');
+      if (!isMobile()) {
+        const upiUrl = buildUpiUrl(total, customerName);
+        alert("UPI payment works best on a mobile phone with a UPI app.\n\nCopy this UPI link and open it on your mobile:\n\n" + upiUrl);
+        return;
+      }
+
+      const upiUrl = buildUpiUrl(total, customerName);
+      window.location.href = upiUrl;
     }
   </script>
 </body>
